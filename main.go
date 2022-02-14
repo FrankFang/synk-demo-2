@@ -1,27 +1,23 @@
 package main
 
 import (
-	"os"
-	"os/signal"
-	"path/filepath"
-	"syscall"
+	"os/exec"
 
-	"github.com/zserge/lorca"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	go func() {
+		gin.SetMode(gin.DebugMode)
+		router := gin.Default()
+		router.GET("/", func(c *gin.Context) {
+			c.Writer.Write([]byte("sdsd"))
+		})
+		router.Run(":8080")
+	}()
+	// 先写死路径，后面再照着 lorca 改
 	chromePath := "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-	// start chrome
-
-	// var ui lorca.UI
-	// currentDir, _ := os.Getwd()
-	// dir := filepath.Join(currentDir, ".cache")
-	// ui, _ = lorca.New("https://baidu.com", dir, 800, 600)
-	chSignal := make(chan os.Signal, 1)
-	signal.Notify(chSignal, syscall.SIGINT, syscall.SIGTERM)
-	select {
-	// case <-ui.Done():
-	case <-chSignal:
-	}
-	// ui.Close()
+	cmd := exec.Command(chromePath, "--app=http://127.0.0.1:8080/")
+	cmd.Start()
+	select {}
 }
